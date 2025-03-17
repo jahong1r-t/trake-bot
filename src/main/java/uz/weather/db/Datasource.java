@@ -1,6 +1,7 @@
 package uz.weather.db;
 
 import com.google.gson.Gson;
+import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.weather.entity.Category;
@@ -38,7 +39,7 @@ public class Datasource {
                 spendMap.put(spend.getId(), spend);
             }
 
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

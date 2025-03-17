@@ -20,13 +20,15 @@ public class UserService extends MainBot {
 
         Gson gson = new Gson();
 
-        userMap.putIfAbsent(chatId, User.builder()
+        User build = User.builder()
                 .chatId(chatId)
                 .fullName(from.getFirstName())
                 .userName(from.getUserName())
                 .state(State.MAIN_PANEL)
                 .categoryIds(new ArrayList<>())
-                .build());
+                .build();
+
+        userMap.putIfAbsent(chatId, build);
 
         User user = userMap.get(chatId);
         State currentState = userMap.get(chatId).getState();
