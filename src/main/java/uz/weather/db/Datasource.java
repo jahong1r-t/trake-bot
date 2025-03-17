@@ -1,6 +1,7 @@
 package uz.weather.db;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -8,9 +9,7 @@ import uz.weather.entity.Category;
 import uz.weather.entity.Spend;
 import uz.weather.entity.User;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,7 @@ public class Datasource {
     public static Map<Long, User> userMap = new HashMap<>();
     public static Map<String, Category> categoryMap = new HashMap<>();
     public static Map<String, Spend> spendMap = new HashMap<>();
-    static Gson gson = new Gson();
+    static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     static {
         try {
@@ -29,12 +28,12 @@ public class Datasource {
                 userMap.put(user.getChatId(), user);
             }
 
-            Category[] categories = gson.fromJson(new BufferedReader(new FileReader("src/main/resources/spend.json")), Category[].class);
+            Category[] categories = gson.fromJson(new BufferedReader(new FileReader("src/main/resources/category.json")), Category[].class);
             for (Category category : categories) {
                 categoryMap.put(category.getId(), category);
             }
 
-            Spend[] spends = gson.fromJson(new BufferedReader(new FileReader("src/main/resources/category.json")), Spend[].class);
+            Spend[] spends = gson.fromJson(new BufferedReader(new FileReader("src/main/resources/spend.json")), Spend[].class);
             for (Spend spend : spends) {
                 spendMap.put(spend.getId(), spend);
             }
@@ -43,6 +42,39 @@ public class Datasource {
             throw new RuntimeException(e);
         }
     }
+
+    @SneakyThrows
+    public static void writUserToJson() throws IOException {
+        ArrayList<User> users = new ArrayList<>(userMap.values());
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/users.json"))) {
+            gson.toJson(users, writer);
+        }
+    }
+
+    @SneakyThrows
+    public static void writSpendToJson() throws IOException {
+        ArrayList<Spend> users = new ArrayList<>(spendMap.values());
+
+        writCategoryToJson();
+        writUserToJson();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/spend.json"))) {
+            gson.toJson(users, writer);
+        }
+    }
+
+    @SneakyThrows
+    public static void writCategoryToJson() throws IOException {
+        ArrayList<Category> users = new ArrayList<>(categoryMap.values());
+
+        writUserToJson();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("src/main/resources/category.json"))) {
+            gson.toJson(users, writer);
+        }
+    }
+
 
     public static ReplyKeyboardMarkup keyboard(String[][] buttons) {
         List<KeyboardRow> rows = new ArrayList<>();

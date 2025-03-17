@@ -15,6 +15,7 @@ import java.io.File;
 public class MainBot extends TelegramLongPollingBot {
 
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {

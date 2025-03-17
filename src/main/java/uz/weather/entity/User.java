@@ -11,7 +11,6 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 @Builder
 public class User {
     private Long chatId;
